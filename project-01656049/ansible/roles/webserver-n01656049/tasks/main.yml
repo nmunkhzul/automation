@@ -1,0 +1,43 @@
+---
+# tasks file for webserver-n01656049
+- name: Install Apache server
+  dnf: 
+    name: httpd
+    state: present
+  when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS'
+  notify: restart_httpd
+
+- name: Capture ansible facts
+  debug:
+    var: ansible_facts
+  notify: restart_httpd
+
+- name: Create files with FQDN
+  file:
+    path: "~/{{ inventory_hostname_short }}.html"
+    state: touch
+  delegate_to: localhost
+  become: no
+  notify: restart_httpd
+
+- name: Add a respective FQDN to html files
+  blockinfile:
+    path: "~/{{ inventory_hostname_short }}.html"
+    marker: ""
+    block: |
+      <h1> {{ ansible_facts['fqdn'] }}</h1>
+  delegate_to: localhost
+  become: no
+  notify: restart_httpd
+
+- name: Copy html files to respective node as index.html
+  copy:
+    src: "~/{{ inventory_hostname_short }}.html"
+    dest: "{{ index_path }}/index.html"
+    mode: "{{ permission }}"
+  notify: restart_httpd
+
+- name: Enable startup Apache server
+  systemd:
+    name: httpd
+    enabled: true

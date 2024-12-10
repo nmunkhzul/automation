@@ -1,0 +1,43 @@
+---
+# tasks file for user-n01656049
+
+- name: Create a group
+  group:
+    name: "{{ groupname }}"
+    state: present
+
+- name: Create users
+  user:
+    name: "{{ item }}"
+    state: present
+    groups: "{{ groupname }},wheel"
+    generate_ssh_key: yes
+    ssh_key_file: "/home/{{ item }}/.ssh/id_rsa"
+    ssh_key_passphrase: ""
+    ssh_key_bits: 2048
+  loop: "{{ userlist }}"
+
+- name: create authorized_keys
+  copy:
+    src: "/home/{{ item }}/.ssh/id_rsa.pub"
+    dest: "/home/{{ item }}/.ssh/authorized_keys"
+    remote_src: yes
+    mode: 0600
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  loop: "{{ userlist }}"
+
+- name: Download key_file to localhost
+  fetch:
+    src: "/home/{{ userlist[0] }}/.ssh/id_rsa"
+    dest: "~/id_rsa_{{ userlist[0] }}"
+    flat: yes
+  when: inventory_hostname == groups['linux'][0]
+
+- name: change permission the key file
+  file:
+    path: "~/id_rsa_{{ userlist[0] }}"
+    mode: '0600'
+  delegate_to: localhost
+  become: no
+  

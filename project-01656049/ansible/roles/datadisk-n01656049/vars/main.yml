@@ -1,0 +1,16 @@
+---
+# vars file for datadisk-n01656049
+partitions:
+  - mount_point: /part1
+    filesystem: xfs
+    device: /dev/sdc
+    partition_no: 1
+    part_start: 1MiB
+    part_end: 4097MiB
+  - mount_point: /part2
+    filesystem: ext4
+    device: /dev/sdc
+    partition_no: 2
+    part_start: 4098MiB
+    part_end: 100% 
+

@@ -1,0 +1,10 @@
+---
+# tasks file for profile-n01656049
+- name: profile file update
+  blockinfile:
+    path: /etc/profile
+    insertafter: EOF
+    backup: yes
+    block: |
+      #Test block added by Ansible n01656049
+      export TMOUT=1500

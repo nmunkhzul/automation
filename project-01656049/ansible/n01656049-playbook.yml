@@ -1,0 +1,13 @@
+- name: Automation Project
+  hosts: linux
+  pre_tasks:
+    - debug:
+        msg: "Beginning project"
+  roles:
+    - profile-n01656049
+    - user-n01656049
+    - datadisk-n01656049
+    - webserver-n01656049
+  post_tasks:
+    - debug:
+        msg: "Finished project"

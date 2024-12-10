@@ -1,0 +1,41 @@
+---
+# tasks file for datadisk-n01656049
+- name: Create directory part
+  file:
+    path: "{{ item.mount_point }}"
+    state: directory
+  loop: "{{ partitions }}"
+
+- name: Create partition
+  parted:
+    device: "{{ item.device }}"
+    number: "{{ item.partition_no }}"
+    state: present
+    part_type: primary
+    fs_type: "{{ item.filesystem }}"
+    part_start: "{{ item.part_start }}"
+    part_end: "{{ item.part_end }}"
+  loop: "{{ partitions }}"
+
+- name: Create filesystem
+  filesystem:
+    fstype: "{{ item.filesystem }}"
+    dev: "{{ item.device }}{{ item.partition_no }}"
+  loop: "{{ partitions }}"
+
+- name: Mount partition
+  mount:
+    path: "{{ item.mount_point }}"
+    src: "{{ item.device }}{{ item.partition_no }}"
+    fstype: "{{ item.filesystem}}"
+    state: mounted
+  loop: "{{ partitions }}"
+
+    #- name: Persistently mount the partition
+    #mount:
+    #path: "{{ item.mount_point }}"
+    #src: "{{ item.device }}{{ item.partition_no }}"
+    #fstype: "{{ item.filesystem }}"
+    #opts: defaults
+    #state: present
+    #loop: "{{ partitions }}"

@@ -1,0 +1,7 @@
+---
+# handlers file for webserver-n01656049
+# Restart Apache Server
+- name: restart_httpd
+  systemd:
+    name: httpd
+    state: restarted

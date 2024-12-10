@@ -1,0 +1,4 @@
+---
+# vars file for webserver-n01656049
+index_path: /var/www/html
+permission: 0444
